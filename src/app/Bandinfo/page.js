@@ -25,10 +25,10 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-gray-300 h-screen text-black">
+    <div className="bg-gray-400 h-screen text-black">
       <Navbar />
 
-      <div className="container mx-auto ">
+      <div className="container mx-auto px-8">
         <div className="flex justify-center ">
           <picture className="w-96 h-48 bg-cover">            
             <img src="tittle2.png" className="w-96 h-full object-cover" />

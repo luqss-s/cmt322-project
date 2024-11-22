@@ -1,12 +1,14 @@
 import React from 'react';
 
-const Navbar = () => {
+
+const Navbaradmin = () => {
   return (
     <nav id="navbar" className="bg-black">
       <div className="w-screen px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div>
-            <a href="/">
+            <a href="/adminpage">
+
               <img className="h-12 w-24 inline" src="/logobotb.png" alt="Your Company" />
             </a>
           </div>
@@ -14,18 +16,23 @@ const Navbar = () => {
             <div className="flex-shrink-0"></div>
             <div className="hidden md:block">
               <div className="mr-8 flex items-baseline space-x-4">
-                <a href="#" className="bg-gray-900 text-white hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium font-serif" aria-current="page">Book Ticket</a>
-                <a href="/Bandinfo" className="text-gray-300 hover:bg-gray-700 hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium font-serif">Band Info</a>
-                <a href="/merchandise" className="text-gray-300 hover:bg-gray-700 hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium font-serif">Merchandise</a>
-                <a href="/contact" className="text-gray-300 hover:bg-gray-700 hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium font-serif">Contact Us</a>
+                <a href="#" className="bg-gray-900 text-white hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Ticket</a>
+                <a href="/BandAdmin" className="bg-gray-900 text-white hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Band</a>
+                <a href="/merch_admin" className="bg-gray-900 text-white hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Merchandise</a>
+                <a href="#" className="bg-gray-900 text-white hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium" aria-current="page">Vote</a>
+              
+               
               </div>
+              
             </div>
+
           </div>
+
           <div className="hidden md:block">
             <div className="mr-100 flex items-center md:ml-5 space-x-2">
-              <a href="/BandAdmin" className="text-gray-300 hover:bg-gray-700 hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium">Register</a>
-              <a href="/login" className="bg-blue-600 text-gray-300 hover:bg-gray-700 hover:text-blue-600 rounded-md px-3 py-2 text-sm font-medium">Login</a>
-            </div>
+              <a href="/" className="bg-red-600 text-gray-300 hover:bg-gray-700 hover:text-red-600 rounded-md px-3 py-2 text-sm font-medium">Log Out</a>
+      
+          </div>
           </div>
           <div className="-mr-2 flex md:hidden">
             <button type="button" className="relative inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800" aria-controls="mobile-menu" aria-expanded="false">
@@ -45,4 +52,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default Navbaradmin;

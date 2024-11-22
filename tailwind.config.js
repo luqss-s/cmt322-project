@@ -11,6 +11,9 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        lacquer: ['Lacquer', 'sans-serif'], // Correctly extending the font
+      },
     },
   },
   plugins: [],

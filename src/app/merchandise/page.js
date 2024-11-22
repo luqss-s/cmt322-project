@@ -32,7 +32,7 @@ export default function Home() {
     <div className="bg-black h-screen">
       <Navbar />
       
-      <div className="w-screen h-screen bg-gray-300 overflow-hidden" style={{ backgroundImage: 'url(.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+      <div className="w-screen h-screen bg-gray-400 overflow-hidden" style={{ backgroundImage: 'url(.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }}>
         <div className="opacity-100 w-full max-h-full">
           <div className="flex justify-center ">
           <picture className="w-96 h-48 bg-cover">            

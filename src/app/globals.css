@@ -1,13 +1,18 @@
+/* Importing the Lacquer font at the very top */
+@import url('https://fonts.googleapis.com/css2?family=Lacquer&display=swap');
+
+/* Tailwind base, components, and utilities */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url('https://fonts.googleapis.com/css2?family=Bangers&display=swap');
 
+/* Global CSS variables */
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
+/* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
@@ -15,8 +20,9 @@
   }
 }
 
+/* Global styles */
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Lacquer', sans-serif; /* Fallback in case Tailwind class is missed */
 }
