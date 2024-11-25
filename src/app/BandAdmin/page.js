@@ -1,553 +1,35 @@
-// 'use client';
-// import { useState } from 'react';
-// import Navbaradmin from '../navadminbar';
-
-// export default function Home() {
-//   const [bands, setBands] = useState([]);
-//   const [newBand, setNewBand] = useState({ name: "", members: "", origin: "" });
-//   const [editBand, setEditBand] = useState(null);
-//   const [isPopupOpen, setIsPopupOpen] = useState(false);
-//   const [stage, setStage] = useState("preliminary");
-//   const [qualifiedPreliminary, setQualifiedPreliminary] = useState([]);
-//   const [qualifiedFinal, setQualifiedFinal] = useState([]);
-
-//   const handleRegisterBand = (e) => {
-//     e.preventDefault();
-//     if (!newBand.name || !newBand.members || !newBand.origin) return;
-//     setBands([
-//       ...bands,
-//       { ...newBand, scores: { preliminary: 0, final: 0 }, disqualified: false },
-//     ]);
-//     setNewBand({ name: "", members: "", origin: "" });
-//   };
-
-//   const handleEditClick = (band) => {
-//     setEditBand(band);
-//     setIsPopupOpen(true);
-//   };
-
-//   const handleEditChange = (e) => {
-//     const { name, value } = e.target;
-//     setEditBand((prev) => ({ ...prev, [name]: value }));
-//   };
-
-//   const handleEditSubmit = () => {
-//     setBands((prevBands) =>
-//       prevBands.map((band) => (band.name === editBand.name ? editBand : band))
-//     );
-//     setIsPopupOpen(false);
-//   };
-
-//   const handleScoreChange = (e, bandName) => {
-//     const value = parseInt(e.target.value) || 0;
-//     setBands((prevBands) =>
-//       prevBands.map((band) => {
-//         if (band.name === bandName && !band.disqualified) {
-//           if (
-//             stage === "preliminary" ||
-//             (stage === "final" && qualifiedPreliminary.some((b) => b.name === bandName))
-//           ) {
-//             return { ...band, scores: { ...band.scores, [stage]: value } };
-//           }
-//         }
-//         return band;
-//       })
-//     );
-//   };
-
-//   const handleDisqualify = (bandName) => { 
-//     setBands((prevBands) => 
-//         prevBands.map((band) => 
-//             band.name === bandName 
-//                 ? { ...band, disqualified: true, scores: { ...band.scores, [stage]: 0 } } 
-//                 : band 
-//         ) 
-//     ); 
-//     computeRankings(); 
-//     };
-
-//   const computeRankings = () => {
-//     const sortedBands = [...bands].sort((a, b) => b.scores[stage] - a.scores[stage]);
-//     const qualifyingCount = stage === "preliminary" ? 10 : 5;
-//     return sortedBands.map((band, index) => ({
-//       ...band,
-//       qualifies: index < qualifyingCount && !band.disqualified,
-//     }));
-//   };
-
-//   const handleNextStage = () => {
-//     const rankings = computeRankings();
-//     if (stage === "preliminary") {
-//       setQualifiedPreliminary(rankings.filter((band) => band.qualifies));
-//       setStage("final");
-//     } else if (stage === "final") {
-//       setQualifiedFinal(rankings.filter((band) => band.qualifies));
-//       setStage("complete");
-//     }
-//   };
-
-//   const rankings = computeRankings();
-
-//   return (
-//     <div className="bg-gray-100 h-screen text-black">
-//       <Navbaradmin />
-//       <h1 className="text-center text-3xl font-bold my-8">Admin Dashboard</h1>
-
-//       {/* Section 1: Register Band */}
-//       <section className="bg-white p-6 rounded-lg max-w-lg mx-auto shadow-lg mb-8">
-//         <h2 className="text-2xl font-semibold mb-4">Register Band</h2>
-//         <form onSubmit={handleRegisterBand} className="space-y-4">
-//           <div>
-//             <label className="block font-medium">Band Name:</label>
-//             <input
-//               type="text"
-//               value={newBand.name}
-//               onChange={(e) => setNewBand({ ...newBand, name: e.target.value })}
-//               className="w-full border border-gray-300 rounded p-2"
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label className="block font-medium">Band Members:</label>
-//             <input
-//               type="text"
-//               value={newBand.members}
-//               onChange={(e) => setNewBand({ ...newBand, members: e.target.value })}
-//               className="w-full border border-gray-300 rounded p-2"
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label className="block font-medium">Origin:</label>
-//             <input
-//               type="text"
-//               value={newBand.origin}
-//               onChange={(e) => setNewBand({ ...newBand, origin: e.target.value })}
-//               className="w-full border border-gray-300 rounded p-2"
-//               required
-//             />
-//           </div>
-//           <button
-//             type="submit"
-//             className="bg-blue-600 text-white rounded px-6 py-2 hover:bg-blue-700 w-full"
-//           >
-//             Add Band
-//           </button>
-//         </form>
-//       </section>
-
-//       {/* Section 2: Display All Bands */}
-//       <section className="mb-8">
-//         <h2 className="text-2xl font-semibold mb-4">All Bands</h2>
-//         <table className="w-full bg-white text-black rounded-lg shadow-md">
-//           <thead className="bg-gray-800 text-white">
-//             <tr>
-//               <th className="py-3 px-6">Name</th>
-//               <th className="py-3 px-6">Members</th>
-//               <th className="py-3 px-6">Origin</th>
-//               <th className="py-3 px-6">Score ({stage})</th>
-//               <th className="py-3 px-6">Edit</th>
-//               <th className="py-3 px-6">Disqualify</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {bands.map((band) => (
-//               <tr
-//                 key={band.name}
-//                 className={`${band.disqualified ? "bg-red-500 text-gray-200" : "bg-gray-100"} text-center`}
-//               >
-//                 <td className="py-3 px-6">{band.name}</td>
-//                 <td className="py-3 px-6">{band.members}</td>
-//                 <td className="py-3 px-6">{band.origin}</td>
-//                 <td className="py-3 px-6">
-//                   <input
-//                     type="number"
-//                     value={band.scores[stage]}
-//                     onChange={(e) => handleScoreChange(e, band.name)}
-//                     disabled={band.disqualified || stage === "complete"}
-//                     className="w-16 text-black"
-//                   />
-//                 </td>
-//                 <td className="py-3 px-6">
-//                   <button
-//                     onClick={() => handleEditClick(band)}
-//                     className="bg-yellow-500 text-white rounded px-4 py-1"
-//                   >
-//                     Edit
-//                   </button>
-//                 </td>
-//                 <td className="py-3 px-6">
-//                   <button
-//                     onClick={() => handleDisqualify(band.name)}
-//                     disabled={band.disqualified}
-//                     className="bg-red-600 text-white rounded px-4 py-1"
-//                   >
-//                     Disqualify
-//                   </button>
-//                 </td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </section>
-
-//       {/* Rankings Section */}
-//       <section className="mb-8">
-//         <h2 className="text-2xl font-semibold mb-4">Rankings</h2>
-//         <table className="w-full bg-white text-black rounded-lg shadow-md">
-//           <thead className="bg-gray-800 text-white">
-//             <tr>
-//               <th className="py-3 px-6">Rank</th>
-//               <th className="py-3 px-6">Name</th>
-//               <th className="py-3 px-6">Score ({stage})</th>
-//               <th className="py-3 px-6">Qualified</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {rankings.map((band, index) => (
-//               <tr
-//                 key={band.name}
-//                 className={`${band.qualifies ? "bg-green-500" : "bg-gray-200"} text-center`}
-//               >
-//                 <td className="py-3 px-6">{index + 1}</td>
-//                 <td className="py-3 px-6">{band.name}</td>
-//                 <td className="py-3 px-6">{band.scores[stage]}</td>
-//                 <td className="py-3 px-6">{band.qualifies ? "Yes" : "No"}</td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </section>
-
-//       {/* Next Stage Button */}
-//       <button
-//         onClick={handleNextStage}
-//         className="bg-blue-600 text-white rounded px-6 py-2 hover:bg-blue-700"
-//       >
-//         Proceed to {stage === "preliminary" ? "Final" : "Complete"} Stage
-//       </button>
-
-//       {/* Edit Band Popup */}
-//       {isPopupOpen && (
-//         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-//           <div className="bg-white p-6 rounded-lg max-w-lg">
-//             <h2 className="text-xl font-semibold mb-4">Edit Band</h2>
-//             <form onSubmit={handleEditSubmit} className="space-y-4">
-//               <div>
-//                 <label className="block font-medium">Band Name:</label>
-//                 <input
-//                   type="text"
-//                   name="name"
-//                   value={editBand.name}
-//                   onChange={handleEditChange}
-//                   className="w-full border border-gray-300 rounded p-2"
-//                   required
-//                 />
-//               </div>
-//               <div>
-//                 <label className="block font-medium">Band Members:</label>
-//                 <input
-//                   type="text"
-//                   name="members"
-//                   value={editBand.members}
-//                   onChange={handleEditChange}
-//                   className="w-full border border-gray-300 rounded p-2"
-//                   required
-//                 />
-//               </div>
-//               <div>
-//                 <label className="block font-medium">Origin:</label>
-//                 <input
-//                   type="text"
-//                   name="origin"
-//                   value={editBand.origin}
-//                   onChange={handleEditChange}
-//                   className="w-full border border-gray-300 rounded p-2"
-//                   required
-//                 />
-//               </div>
-//               <button
-//                 type="submit"
-//                 className="bg-green-600 text-white rounded px-6 py-2 hover:bg-green-700 w-full"
-//               >
-//                 Save Changes
-//               </button>
-//             </form>
-//             <button
-//               onClick={() => setIsPopupOpen(false)}
-//               className="mt-4 text-red-600"
-//             >
-//               Cancel
-//             </button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-// 'use client';
-// import { useState } from 'react';
-// import Navbaradmin from '../navadminbar';
-
-// export default function Home() {
-//   const [bands, setBands] = useState([]);
-//   const [newBand, setNewBand] = useState({ name: "", members: "", origin: "", initialScore: 0 });
-//   const [stage, setStage] = useState("initial"); // initial, preliminary, final
-//   const [rankings, setRankings] = useState([]);
-
-//   const handleRegisterBand = (e) => {
-//     e.preventDefault();
-//     if (!newBand.name || !newBand.members || !newBand.origin) return;
-//     setBands([
-//       ...bands,
-//       {
-//         ...newBand,
-//         initialScore: parseInt(newBand.initialScore),
-//         scores: { preliminary: 0 },
-//         disqualified: false,
-//       },
-//     ]);
-//     setNewBand({ name: "", members: "", origin: "", initialScore: 0 });
-//   };
-
-//   const handleScoreChange = (e, bandName, scoreType) => {
-//     const value = parseInt(e.target.value) || 0;
-//     setBands((prevBands) =>
-//       prevBands.map((band) => {
-//         if (band.name === bandName && !band.disqualified) {
-//           return { ...band, scores: { ...band.scores, [scoreType]: value } };
-//         }
-//         return band;
-//       })
-//     );
-//   };
-
-//   const computeRankings = () => {
-//     let sortedBands;
-//     if (stage === "initial") {
-//       sortedBands = [...bands].sort((a, b) => b.initialScore - a.initialScore);
-//     } else if (stage === "preliminary") {
-//       sortedBands = [...bands].sort((a, b) => b.scores.preliminary - a.scores.preliminary);
-//     }
-//     const qualifyingCount = stage === "initial" ? 3 : 2;
-//     return sortedBands.map((band, index) => ({
-//       ...band,
-//       qualifies: index < qualifyingCount && !band.disqualified,
-//     }));
-//   };
-
-//   const handleSubmitScores = () => {
-//     const updatedRankings = computeRankings();
-//     setRankings(updatedRankings);
-//   };
-
-//   const handleNextStage = () => {
-//     if (stage === "initial") {
-//       setStage("preliminary");
-//     } else if (stage === "preliminary") {
-//       setStage("final");
-//     }
-//   };
-
-//   return (
-//     <div className="bg-gray-100 h-screen text-black">
-//       <Navbaradmin />
-//       <h1 className="text-center text-3xl font-bold my-8">Admin Dashboard</h1>
-
-//       {/* Section: Register Band */}
-//       <section className="bg-white p-6 rounded-lg max-w-lg mx-auto shadow-lg mb-8">
-//         <h2 className="text-2xl font-semibold mb-4">Register Band</h2>
-//         <form onSubmit={handleRegisterBand} className="space-y-4">
-//           <div>
-//             <label className="block font-medium">Band Name:</label>
-//             <input
-//               type="text"
-//               value={newBand.name}
-//               onChange={(e) => setNewBand({ ...newBand, name: e.target.value })}
-//               className="w-full border border-gray-300 rounded p-2"
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label className="block font-medium">Band Members:</label>
-//             <input
-//               type="text"
-//               value={newBand.members}
-//               onChange={(e) => setNewBand({ ...newBand, members: e.target.value })}
-//               className="w-full border border-gray-300 rounded p-2"
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label className="block font-medium">Origin:</label>
-//             <input
-//               type="text"
-//               value={newBand.origin}
-//               onChange={(e) => setNewBand({ ...newBand, origin: e.target.value })}
-//               className="w-full border border-gray-300 rounded p-2"
-//               required
-//             />
-//           </div>
-//           <div>
-//             <label className="block font-medium">Initial Score:</label>
-//             <input
-//               type="number"
-//               value={newBand.initialScore}
-//               onChange={(e) => setNewBand({ ...newBand, initialScore: e.target.value })}
-//               className="w-full border border-gray-300 rounded p-2"
-//               required
-//             />
-//           </div>
-//           <button
-//             type="submit"
-//             className="bg-blue-600 text-white rounded px-6 py-2 hover:bg-blue-700 w-full"
-//           >
-//             Add Band
-//           </button>
-//         </form>
-//       </section>
-
-//       {/* Section: All Bands */}
-//       <section className="mb-8">
-//         <h2 className="text-2xl font-semibold mb-4">All Bands</h2>
-//         <table className="w-full bg-white text-black rounded-lg shadow-md">
-//           <thead className="bg-gray-800 text-white">
-//             <tr>
-//               <th className="py-3 px-6">Name</th>
-//               <th className="py-3 px-6">Members</th>
-//               <th className="py-3 px-6">Origin</th>
-//               <th className="py-3 px-6">Initial Score</th>
-//               {stage !== "initial" && <th className="py-3 px-6">Preliminary Score</th>}
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {bands.map((band) => (
-//               <tr key={band.name} className="bg-gray-100 text-center">
-//                 <td className="py-3 px-6">{band.name}</td>
-//                 <td className="py-3 px-6">{band.members}</td>
-//                 <td className="py-3 px-6">{band.origin}</td>
-//                 <td className="py-3 px-6">{band.initialScore}</td>
-//                 {stage !== "initial" && (
-//                   <td className="py-3 px-6">
-//                     <input
-//                       type="number"
-//                       value={band.scores.preliminary}
-//                       onChange={(e) => handleScoreChange(e, band.name, "preliminary")}
-//                       disabled={stage === "final"}
-//                       className="w-16 text-black"
-//                     />
-//                   </td>
-//                 )}
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </section>
-
-//       {/* Rankings Section */}
-//       <section className="mb-8">
-//         <h2 className="text-2xl font-semibold mb-4">Rankings</h2>
-//         <table className="w-full bg-white text-black rounded-lg shadow-md">
-//           <thead className="bg-gray-800 text-white">
-//             <tr>
-//               <th className="py-3 px-6">Rank</th>
-//               <th className="py-3 px-6">Name</th>
-//               <th className="py-3 px-6">Score</th>
-//               <th className="py-3 px-6">Qualified</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {rankings.map((band, index) => (
-//               <tr key={band.name} className={`${band.qualifies ? "bg-green-500" : "bg-gray-200"} text-center`}>
-//                 <td className="py-3 px-6">{index + 1}</td>
-//                 <td className="py-3 px-6">{band.name}</td>
-//                 <td className="py-3 px-6">
-//                   {stage === "initial" ? band.initialScore : band.scores.preliminary}
-//                 </td>
-//                 <td className="py-3 px-6">{band.qualifies ? "Yes" : "No"}</td>
-//               </tr>
-//             ))}
-//           </tbody>
-//         </table>
-//       </section>
-
-//       {/* Submit and Next Stage Buttons */}
-//       <div className="flex space-x-4 justify-center">
-//         <button
-//           onClick={handleSubmitScores}
-//           className="bg-green-600 text-white rounded px-6 py-2 hover:bg-green-700"
-//         >
-//           Submit Scores
-//         </button>
-//         <button
-//           onClick={handleNextStage}
-//           className="bg-blue-600 text-white rounded px-6 py-2 hover:bg-blue-700"
-//         >
-//           Proceed to Next Stage
-//         </button>
-//       </div>
-//     </div>
-//   );
-// }
-
 'use client';
 import { useState } from 'react';
 import Navbaradmin from '../navadminbar';
 
 export default function Home() {
-  const [bands, setBands] = useState([]);
+  const [bands, setBands] = useState([
+    { name: 'Band A', members: 'Ali, Abu', origin: 'City A', scores: { initial: 0, preliminary: 0, final: 0 }, disqualified: false },
+    { name: 'Band B', members: 'Ali, Abu', origin: 'City B', scores: { initial: 0, preliminary: 0, final: 0 }, disqualified: false },
+    { name: 'Band C', members: 'Ali, Abu', origin: 'City C', scores: { initial: 0, preliminary: 0, final: 0 }, disqualified: false },
+  ]);
   const [editBand, setEditBand] = useState(null);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isFinalPopupOpen, setIsFinalPopupOpen] = useState(false);
   const [stage, setStage] = useState('initial');
   const [qualifiedBands, setQualifiedBands] = useState([]);
-
-  const handleAddBand = () => {
-    setEditBand({ name: '', members: '', origin: '', scores: { initial: 0, preliminary: 0, final: 0 }, disqualified: false });
-    setIsPopupOpen(true);
-  };
-
-  const handleEditClick = (band) => {
-    setEditBand({ ...band }); 
-    setIsPopupOpen(true);
-  };
-
-  const handleEditChange = (e) => {
-    const { name, value } = e.target;
-    setEditBand((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleEditSubmit = (e) => {
-    e.preventDefault(); 
-    if (!editBand.name) return; 
-    setBands((prevBands) => {
-      const exists = prevBands.some((band) => band.name === editBand.name);
-      return exists
-        ? prevBands.map((band) => (band.name === editBand.name ? editBand : band))
-        : [...prevBands, editBand];
-    });
-    setIsPopupOpen(false);
-  };
-
-  const handleDeleteBand = (bandName) => {
-    setBands((prevBands) => prevBands.filter((band) => band.name !== bandName));
-  };
-
-  const handleDisqualify = (bandName) => {
-    setBands((prevBands) =>
-      prevBands.map((band) =>
-        band.name === bandName ? { ...band, disqualified: true } : band
-      )
-    );
-  };
+  const [newBand, setNewBand] = useState({ name: '', members: '', origin: '', scores: { initial: 0, preliminary: 0, final: 0 }, disqualified: false });
 
   const handleScoreChange = (e, bandName) => {
     const value = parseInt(e.target.value) || 0;
     setBands((prevBands) =>
       prevBands.map((band) =>
-        band.name === bandName && !band.disqualified
+        band.name === bandName
           ? { ...band, scores: { ...band.scores, [stage]: value } }
           : band
+      )
+    );
+  };
+
+  const handleDisqualifyBand = (bandName) => {
+    setBands((prevBands) =>
+      prevBands.map((band) =>
+        band.name === bandName ? { ...band, disqualified: true } : band
       )
     );
   };
@@ -576,52 +58,97 @@ export default function Home() {
       setStage('final');
     }
 
-    setBands(qualified);
+    setBands((prevBands) =>
+      prevBands.map((band) => ({
+        ...band,
+        qualifies: qualified.some((q) => q.name === band.name),
+      }))
+    );
 
     if (stage === 'preliminary') {
-      setIsPopupOpen(true); 
+      setIsFinalPopupOpen(true); // Open final popup
     }
   };
 
+  const handleAddOrEditBand = () => {
+    if (editBand) {
+      // Update existing band
+      setBands((prevBands) =>
+        prevBands.map((band) =>
+          band.name === editBand.name ? { ...band, ...newBand } : band
+        )
+      );
+    } else {
+      // Add new band
+      setBands((prevBands) => [...prevBands, newBand]);
+    }
+    setEditBand(null);
+    setNewBand({ name: '', members: '', origin: '', scores: { initial: 0, preliminary: 0, final: 0 }, disqualified: false });
+    setIsPopupOpen(false);
+  };
+
+  const openAddPopup = () => {
+    setEditBand(null);
+    setNewBand({ name: '', members: '', origin: '', scores: { initial: 0, preliminary: 0, final: 0 }, disqualified: false });
+    setIsPopupOpen(true);
+  };
+
+  const openEditPopup = (band) => {
+    setEditBand(band);
+    setNewBand(band);
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+
   const rankings = computeRankings();
+  const prelimBands = bands.filter((band) => band.qualifies && stage === 'preliminary');
+  const finalBands = bands.filter((band) => band.qualifies && stage === 'final');
 
   return (
-    <div className="bg-gray-100 h-screen text-black">
+    <div className="bg-gray-400 h-full w-full text-black overflow-y-auto">
       <Navbaradmin />
-      <h1 className="text-center text-3xl font-bold my-8">Admin Dashboard</h1>
+      <div className="flex justify-center">
+          <picture className="w-96 h-48 bg-cover">            
+            <img src="tittle6.png" className="w-96 h-full object-cover" />
+          </picture>
+        </div>
 
-      {/* Add Band Section */}
-      <section className="mb-8">
-        <button
-          onClick={handleAddBand}
-          className="bg-blue-600 text-white rounded px-6 py-2 hover:bg-blue-700"
-        >
-          Add Band
-        </button>
-      </section>
+      {/* Add Band Button */}
+
 
       {/* Display Bands */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">All Bands</h2>
-        <table className="w-full bg-white rounded-lg shadow-md">
-          <thead className="bg-gray-800 text-white">
+      <section className="mb-8 px-16">
+        <div className='flex justify-between items-center'>
+      <h2 className="text-2xl font-semibold mb-4">All Bands</h2>
+      <button 
+        onClick={openAddPopup}
+        className="bg-blue-600 text-white rounded px-6 py-2 mb-4 hover:bg-blue-700 right-0"
+      >
+        Add Band
+      </button>
+      </div>
+        
+        <table className="w-full bg-white rounded-lg shadow-md ">
+          <thead className="bg-black text-white">
             <tr>
               <th>Name</th>
               <th>Members</th>
               <th>Origin</th>
               <th>Score ({stage})</th>
-              <th>Edit</th>
-              <th>Delete</th>
-              <th>Disqualify</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {bands.map((band) => (
               <tr key={band.name} className={`${band.disqualified ? 'bg-red-500 text-gray-200' : 'bg-gray-100'}`}>
-                <td>{band.name}</td>
-                <td>{band.members}</td>
-                <td>{band.origin}</td>
-                <td>
+                <td className="text-black  px-4 py-2 font-bold">{band.name}</td>
+                <td className="text-black  px-4 py-2 font-bold">{band.members}</td>
+                <td className="text-black px-4 py-2 font-bold">{band.origin}</td>
+                <td className='flex justify-center'>
                   <input
                     type="number"
                     value={band.scores[stage]}
@@ -631,29 +158,20 @@ export default function Home() {
                   />
                 </td>
                 <td>
+                  <div className='flex justify-center gap-4'>
                   <button
-                    onClick={() => handleEditClick(band)}
-                    className="bg-yellow-500 text-white rounded px-4 py-1"
+                    onClick={() => openEditPopup(band)}
+                    className="bg-yellow-500 text-white rounded px-4 py-1 hover:bg-yellow-600 mr-2"
                   >
                     Edit
                   </button>
-                </td>
-                <td>
                   <button
-                    onClick={() => handleDeleteBand(band.name)}
-                    className="bg-red-600 text-white rounded px-4 py-1"
-                  >
-                    Delete
-                  </button>
-                </td>
-                <td>
-                  <button
-                    onClick={() => handleDisqualify(band.name)}
-                    disabled={band.disqualified}
-                    className="bg-red-600 text-white rounded px-4 py-1"
+                    onClick={() => handleDisqualifyBand(band.name)}
+                    className="bg-red-600 text-white rounded px-4 py-1 hover:bg-red-700"
                   >
                     Disqualify
                   </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -662,10 +180,10 @@ export default function Home() {
       </section>
 
       {/* Rankings */}
-      <section className="mb-8">
+      <section className="mb-8 px-14">
         <h2 className="text-2xl font-semibold mb-4">Rankings</h2>
         <table className="w-full bg-white rounded-lg shadow-md">
-          <thead className="bg-gray-800 text-white">
+          <thead className="bg-black text-white">
             <tr>
               <th>Rank</th>
               <th>Name</th>
@@ -675,19 +193,36 @@ export default function Home() {
           </thead>
           <tbody>
             {rankings.map((band, index) => (
-              <tr key={band.name} className={`${band.qualifies ? 'bg-green-500' : 'bg-gray-200'}`}>
-                <td>{index + 1}</td>
-                <td>{band.name}</td>
-                <td>{band.scores[stage]}</td>
-                <td>{band.qualifies ? 'Yes' : 'No'}</td>
+              <tr key={band.name} className={`${band.qualifies ? 'bg-green-500' : 'bg-white'}`}>
+                <td className="text-black  px-4 py-2 font-bold">{index + 1}</td>
+                <td className="text-black  px-4 py-2 font-bold text-center">{band.name}</td>
+                <td className="text-black  px-4 py-2 font-bold text-center">{band.scores[stage]}</td>
+                <td className="text-black  px-4 py-2 font-bold text-center ">{band.qualifies ? 'Yes' : 'No'}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </section>
 
+      {/* Preliminary and Final Bands */}
+      <section className="mb-8 px-14">
+        <h3 className="text-xl font-semibold mb-4">Preliminary Bands</h3>
+        <ul>
+          {prelimBands.map((band) => (
+            <li key={band.name}>{band.name}</li>
+          ))}
+        </ul>
+
+        <h3 className="text-xl font-semibold mb-4 mt-8">Final Bands</h3>
+        <ul>
+          {finalBands.map((band) => (
+            <li key={band.name}>{band.name}</li>
+          ))}
+        </ul>
+      </section>
+
       {/* Submit & Advance */}
-      <div className="mb-8">
+      <div className="mb-8 px-14">
         <button
           onClick={handleAdvanceStage}
           className="bg-green-600 text-white rounded px-6 py-2 hover:bg-green-700"
@@ -696,78 +231,76 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Popup */}
+      {/* Add/Edit Band Popup */}
       {isPopupOpen && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-black text-white p-6 rounded-lg max-w-lg relative">
+      {/* Close button */}
+      <button
+        onClick={handleClosePopup}
+        className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
+      >
+        &times; {/* This represents the "X" */}
+      </button>
+      <h2 className="text-xl font-semibold mb-4">{editBand ? 'Edit Band' : 'Add Band'}</h2>
+      <div>
+        <label>Name:</label>
+        <input
+          type="text"
+          value={newBand.name}
+          onChange={(e) => setNewBand({ ...newBand, name: e.target.value })}
+          className="w-full mb-4"
+        />
+      </div>
+      <div>
+        <label>Members:</label>
+        <input
+          type="text"
+          value={newBand.members}
+          onChange={(e) => setNewBand({ ...newBand, members: e.target.value })}
+          className="w-full mb-4"
+        />
+      </div>
+      <div>
+        <label>Origin:</label>
+        <input
+          type="text"
+          value={newBand.origin}
+          onChange={(e) => setNewBand({ ...newBand, origin: e.target.value })}
+          className="w-full mb-4"
+        />
+      </div>
+      <button
+        onClick={handleAddOrEditBand}
+        className="bg-blue-600 text-white rounded px-6 py-2 hover:bg-blue-700"
+      >
+        Save
+      </button>
+    </div>
+  </div>
+)}
+
+      {/* Final Popup */}
+      {isFinalPopupOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-lg">
-            {stage === 'final' ? (
-              <>
-                <h2 className="text-xl font-semibold mb-4">Qualified for Final</h2>
-                <ul>
-                  {qualifiedBands.map((band) => (
-                    <li key={band.name}>{band.name}</li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <>
-                <h2 className="text-xl font-semibold mb-4">Edit Band</h2>
-                <form onSubmit={handleEditSubmit} className="space-y-4">
-                  <div>
-                    <label>Band Name:</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={editBand.name}
-                      onChange={handleEditChange}
-                      className="w-full border rounded px-3 py-2"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label>Members:</label>
-                    <input
-                      type="text"
-                      name="members"
-                      value={editBand.members}
-                      onChange={handleEditChange}
-                      className="w-full border rounded px-3 py-2"
-                    />
-                  </div>
-                  <div>
-                    <label>Origin:</label>
-                    <input
-                      type="text"
-                      name="origin"
-                      value={editBand.origin}
-                      onChange={handleEditChange}
-                      className="w-full border rounded px-3 py-2"
-                    />
-                  </div>
-                  <div className="flex justify-end space-x-4">
-                    <button
-                      type="button"
-                      onClick={() => setIsPopupOpen(false)}
-                      className="bg-gray-500 text-white rounded px-4 py-2 hover:bg-gray-600"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
-                    >
-                      Save
-                    </button>
-                  </div>
-                </form>
-              </>
-            )}
+            <h2 className="text-xl font-semibold mb-4">Congratulations to Finalists!</h2>
+            <ul>
+              {finalBands.map((band) => (
+                <li key={band.name}>{band.name}</li>
+              ))}
+            </ul>
+            <button
+              onClick={() => setIsFinalPopupOpen(false)}
+              className="bg-red-600 text-white rounded px-6 py-2 hover:bg-red-700 mt-4"
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
     </div>
   );
 }
-
 
 
